@@ -1,0 +1,29 @@
+FROM node:20-alpine
+
+# Install build dependencies for better-sqlite3
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy source files
+COPY src/ ./src/
+COPY tsconfig.json ./
+
+# Install TypeScript and ts-node for running the collector
+RUN npm install -D typescript ts-node @types/node
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Create collector entry point
+COPY collector-entry.js ./
+
+# Set environment
+ENV NODE_ENV=production
+
+# Run the data collector
+CMD ["node", "collector-entry.js"]

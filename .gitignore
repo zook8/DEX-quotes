@@ -1,0 +1,61 @@
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+*.key
+*.pem
+
+# API Keys and secrets  
+*API_KEY*
+*SECRET*
+*PRIVATE_KEY*
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+dist/
+build/
+.next/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Analysis and debug files
+*.backup
+debug-*.js
+test-*.js
+*ANALYSIS.md
+*SUMMARY.md
+*REPORT.md
+*DEBUG*.md
+
+# Deployment scripts (keep local only)
+deploy*.sh
+
+# AI assistant cache
+.serena/
+.claude/
+
+# Data and cache
+data/
+cache/
+
+# Docker and nginx config (deployment specific)
+nginx.conf
+docker-compose.yml
+
+# Large binary files
+tailwindcss

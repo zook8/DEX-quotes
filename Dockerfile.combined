@@ -1,0 +1,82 @@
+# Combined Dockerfile: NGINX frontend + Node.js API backend
+FROM node:20-alpine AS builder
+
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies (including devDependencies for build)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage with both NGINX and Node.js
+FROM node:20-alpine
+
+# Install nginx and supervisor for process management
+RUN apk add --no-cache nginx supervisor
+
+# Create nginx directories
+RUN mkdir -p /var/lib/nginx/logs \
+    && mkdir -p /run/nginx
+
+# Copy built frontend
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Setup Node.js API server
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/server ./server
+COPY --from=builder /app/package*.json ./
+
+# Install server dependencies separately 
+WORKDIR /app/server
+RUN npm install
+
+# Return to app root
+WORKDIR /app
+
+# Create data directory for cache
+RUN mkdir -p /app/data
+
+# Create supervisor config
+RUN echo '[supervisord]' > /etc/supervisord.conf && \
+    echo 'nodaemon=true' >> /etc/supervisord.conf && \
+    echo 'user=root' >> /etc/supervisord.conf && \
+    echo '' >> /etc/supervisord.conf && \
+    echo '[program:nginx]' >> /etc/supervisord.conf && \
+    echo 'command=nginx -g "daemon off;"' >> /etc/supervisord.conf && \
+    echo 'autostart=true' >> /etc/supervisord.conf && \
+    echo 'autorestart=true' >> /etc/supervisord.conf && \
+    echo 'stderr_logfile=/var/log/nginx.err.log' >> /etc/supervisord.conf && \
+    echo 'stdout_logfile=/var/log/nginx.out.log' >> /etc/supervisord.conf && \
+    echo '' >> /etc/supervisord.conf && \
+    echo '[program:nodeapi]' >> /etc/supervisord.conf && \
+    echo 'command=node server/index.js' >> /etc/supervisord.conf && \
+    echo 'environment=NODE_ENV="production"' >> /etc/supervisord.conf && \
+    echo 'directory=/app' >> /etc/supervisord.conf && \
+    echo 'autostart=true' >> /etc/supervisord.conf && \
+    echo 'autorestart=true' >> /etc/supervisord.conf && \
+    echo 'stderr_logfile=/var/log/nodeapi.err.log' >> /etc/supervisord.conf && \
+    echo 'stdout_logfile=/var/log/nodeapi.out.log' >> /etc/supervisord.conf
+
+# Expose ports
+EXPOSE 80 3003
+
+# Health check for both services
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost/ && \
+      wget --quiet --tries=1 --spider http://localhost:3003/api/sellAmounts || exit 1
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
