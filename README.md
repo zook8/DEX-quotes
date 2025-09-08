@@ -97,11 +97,8 @@ The app requires two API services:
 - Uniswap V2, V3, V4
 - Sushiswap
 - Curve Finance 
-- 0x Matcha Swap Aggregator
 - Balancer (quotes for Balancer need improvements) 
 - 0x Protocol Aggregation (Matcha)
-- Balancer
-- dYdX (via 0x)
 
 ## Contributing
 
@@ -113,4 +110,4 @@ The app requires two API services:
 
 ## License
 
-Built for Uniswap Foundation
+MIT open source license for community use
