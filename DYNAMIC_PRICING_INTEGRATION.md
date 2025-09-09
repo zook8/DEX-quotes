@@ -112,7 +112,7 @@ const result = await enhancedService.compareTokenPairWithDynamicPricing('weth-us
 ```typescript
 headers: {
   'User-Agent': 'ZookCryptoAnalytics/1.0 (contact@zook.com)',
-  'x-cg-demo-api-key': 'CG-sw3jGBgpxKyEsNACERZfnebE',
+  'x-cg-demo-api-key': 'INSERT_KEY',
   'Accept': 'application/json',
   'Accept-Encoding': 'gzip'
 }
