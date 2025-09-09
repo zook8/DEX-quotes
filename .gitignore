@@ -61,3 +61,24 @@ docker-compose.yml
 tailwindcss
 .ssh/
 .env
+
+# Temporary analysis files
+*INTEGRATION.md
+*IMPLEMENTATION.md
+*TROUBLESHOOTING.md
+*REPORT.md
+*SUMMARY.md
+*ANALYSIS.md
+
+# Backup directories
+DEX-quotes-backup/
+
+# IDE configurations
+.vscode/
+
+# Deployment notes
+DEPLOYMENT_NOTES_TO_GITHUB.md
+
+# Workflow files (we want to keep our current workflow only)
+.github/workflows/*
+!.github/workflows/deploy.yml
