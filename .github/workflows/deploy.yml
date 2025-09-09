@@ -1,11 +1,11 @@
-name: React CI/CD to VPS
+name: React CI/CD to VPS - BUILD ONLY
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -17,16 +17,11 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Build
+      env:
+      VITE_COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
       run: npm run build
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@master
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
       with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/ubuntu/uniswap-price-quotes
-          # Deploy frontend
-          rm -rf dist/*
-          cp -r $GITHUB_WORKSPACE/dist/* dist/
-          echo "✅ Frontend deployed!"
+        name: build-artifact
+        path: dist/

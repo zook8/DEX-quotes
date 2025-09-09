@@ -31,7 +31,7 @@ class DynamicPricingService {
   // Your CoinGecko API configuration
   private readonly API_HEADERS = {
     'User-Agent': 'ZookCryptoAnalytics/1.0 (contact@zook.com)',
-    'x-cg-demo-api-key': 'CG-sw3jGBgpxKyEsNACERZfnebE',
+    'x-cg-demo-api-key': import.meta.env.COINGECKO_API_KEY,
     'Accept': 'application/json',
     'Accept-Encoding': 'gzip'
   };
